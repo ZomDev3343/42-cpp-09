@@ -1,0 +1,6 @@
+.vscode
+*.o
+*/*.o
+ex00/btc
+ex01/polish
+ex02/pmergeme
