@@ -90,7 +90,7 @@ std::string BitcoinExchange::find_prev_date(std::string date)
 	int					year = std::atoi(date.substr(0, 4).c_str());
 	int					month = std::atoi(date.substr(5, 2).c_str());
 	int					day = std::atoi(date.substr(8, 2).c_str());
-	std::stringstream	new_date(date);
+	std::ostringstream	new_date(date);
 
 	while (this->_db.find(new_date.str()) == this->_db.end())
 	{
@@ -104,8 +104,8 @@ std::string BitcoinExchange::find_prev_date(std::string date)
 					throw BitcoinExchange::DateNotFoundException();
 			}
 		}
-		new_date.clear();
-		new_date << year << "-" << (month < 10 ? "0" : "") << month << (day < 10 ? "0" : "") << day;
+		new_date.str("");	
+		new_date << year << "-" << (month < 10 ? "0" : "") << month << "-" << (day < 10 ? "0" : "") << day;
 	}
 	return (new_date.str());
 }
@@ -116,7 +116,7 @@ float BitcoinExchange::calculate_amount(std::string &date, float &amount)
 
 	try
 	{
-		prev_date = find_prev_date(date.substr(0, 10));
+		prev_date = find_prev_date(date);
 	}
 	catch(const BitcoinExchange::DateNotFoundException& e)
 	{
@@ -140,12 +140,22 @@ void BitcoinExchange::exchange(char *file_path)
 		while (std::getline(input, line))
 		{
 			date = line.substr(0, 10);
-			amount = std::atof(line.substr(13).c_str());
-			
-			if (check_date(date) && check_amount(amount) && (real_amount = calculate_amount(date, amount)) != 1.0f)
-				std::cout << date << " => " << amount << " = " << real_amount << std::endl;
+			if (line.length() > 10)
+				amount = std::atof(line.substr(13).c_str());
 			else
-				return input.close(), (void) 0;
+			{
+				std::cerr << "Error: bad input => " << date << std::endl;
+				continue ;
+			}
+
+			if (amount < 0.0f)
+			{
+				std::cerr << "Error: not a positive number" << std::endl;
+				continue ;
+			}
+
+			if (check_date(date) && check_amount(amount) && (real_amount = calculate_amount(date, amount)) != -1.0f)
+				std::cout << date << " => " << amount << " = " << real_amount << std::endl;
 		}
 	}
 	else
