@@ -73,13 +73,17 @@ bool BitcoinExchange::check_date(std::string const &date) const
 	month = std::atoi(date.substr(5, 2).c_str());
 	day = std::atoi(date.substr(8, 2).c_str());
 	if (year < 2009 || month < 0 || month > 12 || day < 0 || day > 31 || (month == 2 && day > 29))
-		return false;
+		return std::cerr << "Error: Wrong date" << std::endl, false;
 	return true;
 }
 
 bool BitcoinExchange::check_amount(float const &amount) const
 {
-	return amount >= 0.0f && amount <= 1000.0f;
+	if (amount > 1000.0f)
+		return std::cerr << "Error: too large a number" << std::endl, false;
+	if (amount < 0.0f)
+		return std::cerr << "Error: too small a number" << std::endl, false;
+	return true;
 }
 
 std::string BitcoinExchange::find_prev_date(std::string date)
