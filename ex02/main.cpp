@@ -24,7 +24,7 @@ int main(int ac, char **av)
 		start = clock();
 		pmergeme_deque(deq);
 		end = clock();
-		std::cout << "Time to process a range of " << deq.size() << " elements with std::vector : " << double(end - start) / CLOCKS_PER_SEC << " us" << std::endl;
+		std::cout << "Time to process a range of " << deq.size() << " elements with std::deque : " << double(end - start) / CLOCKS_PER_SEC << " us" << std::endl;
 	}
 	else
 		std::cout << "Usage: ./pmergeme <number_sequence>" << std::endl;
